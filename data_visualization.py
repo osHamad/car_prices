@@ -14,15 +14,15 @@ atr = {0:'symboling', 1:'losses', 2:'brand', 3:'fuel type', 4:'asparation', 5:'d
 21:'horsepower', 22:'peak rpm', 23:'city miles per gallon', 24:'highway miles per gallon', 25:'price'}
 
 def main():
-    # setting up our data
+    # setting up our data and removing unwanted instances
     with open('auto_mobile_data.csv') as file:
         data = list(csv.reader(file))
-        print(len(data))
-        data = [i[len(i)-1] for i in data if i[len(i)-1] != '?']
-        print(len(data))
+        data = setup.remove_inst(data)
 
+    # creating a set of attributes to skip
     skip_atr = setup.skip_attribute(data)
 
+    # dictionary of the mean of values of attributes
     mean_nums = setup.missing_values(data)
 
     # plotting each attribute in terms of y
@@ -30,7 +30,7 @@ def main():
         if index not in skip_atr:
             x = [float(i[index]) if i[index] != '?' else float(mean_nums[index]) for i in data]
             y = [float(i[len(i)-1]) for i in data]
-            print(x, y)
+
             plt.plot(x, y, 'bo')
             plt.xlabel(atr[index])
             plt.ylabel(atr[25])
