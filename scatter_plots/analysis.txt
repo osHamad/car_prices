@@ -1,0 +1,35 @@
+scatter plot correlations:
+
+symboling- no correlation
+
+losses- no correlation
+
+wheel base- positive weak correlation
+
+car length- positive weak correlation
+
+car width- positive moderate correlation
+
+car height- no correlation
+
+car weight- positive moderate correlation
+
+engine size- weak positive correlation
+
+bore- no correlation
+
+stroke- no correlation
+
+compression ratio- no correlation
+
+horsepower- weak positive correlation
+
+peak rpm- no correlation
+
+city miles per gallon- negative weak correlation
+
+highway miles per gallon- negative weak correlation
+
+
+most suitable x variables:
+wheelbase, car length, car width, car weight, engine size, horsepower, city mpg, highway mpg
