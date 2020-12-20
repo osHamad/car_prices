@@ -1,62 +1,51 @@
 import numpy as np
-from csv import reader
+import csv
+import setup
 from sklearn.linear_model import SGDRegressor
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.preprocessing import scale
-import matplotlib.pyplot as mpl
 
-def train_test_split(data, train_size, index=0):
-    x1pos = 14
-    x2pos = 5
-    ypos = 2
-    train_x = []
-    train_y = []
-    test_x = []
-    test_y = []
-    train_size *= len(data)
-    for i in data:
-        if index < train_size:
-            train_x.append([float(i[x1pos]), float(i[x2pos])])
-            train_y.append(float(i[ypos]))
-        else:
-            test_x.append([float(i[x1pos]), float(i[x2pos])])
-            test_y.append(float(i[ypos]))
-        index += 1
+def train_test(x, y, train_size=0.70, index=0):
+    train_x = x[:round(train_size * len(y))]
+    test_x = x[round(train_size * len(y)):]
+    train_y = y[:round(train_size * len(y))]
+    test_y = y[round(train_size * len(y)):]
 
     return train_x, train_y, test_x, test_y
 
-
-def read_csv(file):
-    with open(file, newline='') as data:
-        return list(reader(data))
-
-def model_eval(y_data, x_data, model):
-    y = []
-    yhat = []
-    for i in range(len(y_data)):
-        y.append(y_data[i])
-        yhat.append(float(model.predict([[x_data[i]]])))
-    return mse(y, yhat)
-
-
-
 def main():
-    data = read_csv('house_dataset.csv')
-    data.pop(0)
-    train_x, train_y, test_x, test_y = train_test_split(data, 0.70)
-    # mpl.plot(train_x, train_y, 'ro')
+    # setting up our data and removing unwanted instances
+    with open('auto_mobile_data.csv') as file:
+        data = list(csv.reader(file))
+        data = setup.remove_inst(data)
+
+    # creating a set of attributes to skip
+    skip_atr = setup.skip_attribute(data)
+
+    # dictionary of the mean of values of attributes
+    mean_nums = setup.missing_values(data)
+
+    # arranging the x and y data
+    # x is a 2d list and y is 1d
+    x = []
+    for index in range(len(data[0])):
+        if index not in skip_atr:
+            x.append([float(i[index]) if i[index] != '?' else float(mean_nums[index]) for i in data])
+            y = [float(i[len(i)-1]) for i in data]
+
+    # splitting our data into training and testing data
+    train_x, train_y, test_x, test_y = train_test(x, y)
+
+    # preparing data for regression
     x = np.array(train_x)
-    #x = x.reshape((x.size, 1))
     y = np.array(train_y)
     scale(x)
     scale(y)
+
     sgd = SGDRegressor(shuffle=False).fit(x, y)
     print(sgd.score(x, y))
     #print(sgd.predict([[2570]]))
     #print(model_eval(train_y, train_x, sgd))
     print(sgd.predict([[1180, 1946]]))
-    mpl.plot(x, y, 'ro')
-    mpl.plot(x, sgd.predict(x))
-    mpl.show()
 
 main()
