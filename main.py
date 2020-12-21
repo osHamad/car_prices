@@ -28,10 +28,10 @@ def main():
     # arranging the x and y data
     # x is a 2d list and y is 1d
     x = []
-    for index in range(len(data[0])):
-        if index not in skip_atr:
-            x.append([float(i[index]) if i[index] != '?' else float(mean_nums[index]) for i in data])
-            y = [float(i[len(i)-1]) for i in data]
+    y = [float(i[len(i)-1]) for i in data]
+    for i in data:
+        thing = [val for val in i if i.index(val) not in skip_atr]
+        x.append([float(val) if val != '?' else mean_nums[thing.index(val)] for val in thing])
 
     # splitting our data into training and testing data
     train_x, train_y, test_x, test_y = train_test(x, y)
@@ -39,13 +39,13 @@ def main():
     # preparing data for regression
     x = np.array(train_x)
     y = np.array(train_y)
-    scale(x)
-    scale(y)
+    '''scale(x)
+    scale(y)'''
 
     sgd = SGDRegressor(shuffle=False).fit(x, y)
     print(sgd.score(x, y))
     #print(sgd.predict([[2570]]))
     #print(model_eval(train_y, train_x, sgd))
-    print(sgd.predict([[1180, 1946]]))
+    #print(sgd.predict([[1180, 1946]]))
 
 main()
