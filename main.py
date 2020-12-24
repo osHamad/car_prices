@@ -5,6 +5,7 @@ from sklearn.linear_model import SGDRegressor
 from sklearn.metrics import mean_squared_error as mse
 from sklearn.preprocessing import scale
 
+
 def train_test(x, y, train_size=0.70, index=0):
     train_x = x[:round(train_size * len(y))]
     test_x = x[round(train_size * len(y)):]
@@ -22,6 +23,10 @@ def main():
     # creating a set of attributes to skip
     skip_atr = setup.skip_attribute(data)
 
+    # adding attributes with no correlation to skip_atr (see scatter_plots\analysis.txt)
+    # remove: symboling, losses, car height, bore, stroke, compression ratio, peak rpm
+    skip_atr.update({0, 1, 12, 18, 19, 20, 22})
+
     # dictionary of the mean of values of attributes
     mean_nums = setup.missing_values(data)
 
@@ -30,8 +35,8 @@ def main():
     x = []
     y = [float(i[len(i)-1]) for i in data]
     for i in data:
-        thing = [val for val in i if i.index(val) not in skip_atr]
-        x.append([float(val) if val != '?' else mean_nums[thing.index(val)] for val in thing])
+        thing = [i[val] if i[val] != '?' else mean_nums[val] for val in range(len(i))]
+        x.append([float(thing[val]) for val in range(len(thing)) if val not in skip_atr])
 
     # splitting our data into training and testing data
     train_x, train_y, test_x, test_y = train_test(x, y)
@@ -39,10 +44,11 @@ def main():
     # preparing data for regression
     x = np.array(train_x)
     y = np.array(train_y)
-    '''scale(x)
-    scale(y)'''
+    scale(x)
+    scale(y)
 
-    sgd = SGDRegressor(shuffle=False).fit(x, y)
+
+    sgd = SGDRegressor().fit(x, y)
     print(sgd.score(x, y))
     #print(sgd.predict([[2570]]))
     #print(model_eval(train_y, train_x, sgd))
