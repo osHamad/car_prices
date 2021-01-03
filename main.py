@@ -2,8 +2,7 @@ import numpy as np
 import csv
 import setup
 from sklearn.linear_model import SGDRegressor
-from sklearn.metrics import mean_squared_error as mse
-from sklearn.preprocessing import scale
+from sklearn.preprocessing import minmax_scale
 
 
 def train_test(x, y, train_size=0.70, index=0):
@@ -25,7 +24,7 @@ def main():
 
     # adding attributes with no correlation to skip_atr (see scatter_plots\analysis.txt)
     # remove: symboling, losses, car height, bore, stroke, compression ratio, peak rpm
-    skip_atr.update({0, 1, 12, 18, 19, 20, 22})
+    skip_atr.update({0, 1, 12, 18, 19, 20, 22, 25})
 
     # dictionary of the mean of values of attributes
     mean_nums = setup.missing_values(data)
@@ -44,14 +43,16 @@ def main():
     # preparing data for regression
     x = np.array(train_x)
     y = np.array(train_y)
-    scale(x)
-    scale(y)
+    x = minmax_scale(x)
+    y = minmax_scale(y)
 
-
+    # fitting data to our model
     sgd = SGDRegressor().fit(x, y)
-    print(sgd.score(x, y))
-    #print(sgd.predict([[2570]]))
-    #print(model_eval(train_y, train_x, sgd))
-    #print(sgd.predict([[1180, 1946]]))
+
+    # scoring our model
+    # we must score our model with unseen data to prevent over/under fitting
+    test_x = minmax_scale(test_x)
+    test_y = minmax_scale(test_y)
+    print('score of model: ', sgd.score(test_x, test_y))
 
 main()
