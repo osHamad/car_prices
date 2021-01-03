@@ -1,6 +1,7 @@
 import csv
 import setup
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import minmax_scale
 
 # in this file, we will test our data
 # we will graph our data and pick the attributes that connect with y
@@ -30,6 +31,9 @@ def main():
         if index not in skip_atr:
             x = [float(i[index]) if i[index] != '?' else float(mean_nums[index]) for i in data]
             y = [float(i[len(i)-1]) for i in data]
+
+            x = minmax_scale(x)
+            y = minmax_scale(y)
 
             plt.plot(x, y, 'bo')
             plt.xlabel(atr[index])
